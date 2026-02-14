@@ -1,0 +1,3 @@
+[submodule "OptiCommPy"]
+	path = OptiCommPy
+	url = https://github.com/abdalrahimnaser/OptiCommPy.git
