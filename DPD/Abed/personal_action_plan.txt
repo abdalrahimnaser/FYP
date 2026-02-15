@@ -1,0 +1,27 @@
+Personal Action Plan
+
+Motivation: Introduce a DL innovaiton worthy of publishing -> challenging my status quo & moivation to do the same in other fields like embedded (i did that before)
+
+* revise DL fundamentals w/ TF (andrew NG -> TF notebooks -> TF cheatsheet -> fill missing w/ gemeni (like design choices etc)) && Take Notes
+
+https://learn.deeplearning.ai/specializations/deep-learning/lesson/bcazm/welcome
+https://github.com/mrdbourke/tensorflow-deep-learning/blob/main/00_tensorflow_fundamentals.ipynb
+https://github.com/ryanxjhan/TensorFlow-2.x-Cheat-Sheet
+
+
+* Implement DLA && optimize setup
+
+* Further DL paper reading (RNNs, inspirations from other fields, etc.)
+- you must be taking notes down w/ references so you can justify your decisions later on in the report.
+
+* Integration & Further reading
+
+==================
+
+Timeline:
+week 3 => first two points
+weeks 4 & 5 => reading
+week 6 => Integration
+weeks 7 & 8 & 9 => further reading + plan for HG
+weeks 10 & 11 -> report
+
