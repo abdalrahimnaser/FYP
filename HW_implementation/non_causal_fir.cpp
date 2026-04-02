@@ -12,7 +12,7 @@ void fir_new(const float input[], const float taps[], float output[]){
         shift_reg[i] = input[i-HALF_TAPS];
     }
 
-	for(int j = HALF_TAPS; j < NO_SYMBOLS+HALF_TAPS; j ++ ) {
+	for(int j = 0; j < NO_SYMBOLS; j ++ ) {
 		#pragma HLS pipeline II=1
 
 		float acc = 0;
@@ -24,10 +24,10 @@ void fir_new(const float input[], const float taps[], float output[]){
 			shift_reg[i] = shift_reg[i + 1];
 		}
 
-        tmp = (j<NO_SYMBOLS) ? input[j] : 0;
 		acc += tmp * taps[NO_TAPS-1];
+		tmp = (j<(NO_SYMBOLS-HALF_TAPS-1)) ? input[j+1+HALF_TAPS] : 0;
 		shift_reg[NO_TAPS-1] = tmp;
-		output[j-HALF_TAPS] = acc;
+		output[j] = acc;
 	}
 }
 
