@@ -1,27 +1,30 @@
-// #include <math.h>
-// #include <stdio.h>
-// #include "MLP_tb.h"
-// #include "MLP.h"
+#include <math.h>
+#include <stdio.h>
+#include "MLP_tb.h"
+#include "MLP.h"
 
-// static void PrintPythonArrayFloat(const char *name, const float *arr, int n) {
-//   printf("%s = [", name);
-//   for (int i = 0; i < n; ++i) {
-//     if (i) printf(",\n ");
-//     printf("%.9g", (double)arr[i]);
-//   }
-//   printf("]\n");
-// }
+static void PrintPythonArrayFloat(const char *name, const float *arr, int n) {
+  printf("%s = [", name);
+  for (int i = 0; i < n; ++i) {
+    if (i) printf(",\n ");
+    printf("%.9g", (double)arr[i]);
+  }
+  printf("]\n");
+}
 
-// int main() {
+int main() {
 
-//   static float sig_out[NO_SYMBOLS * 2];
+  static float sig_out[NO_SYMBOLS * 2];
 
 
 
-//   MultilayerPerceptron(x, sig_out);
+  MultilayerPerceptron(x, sig_out);
 
-//   // What you asked for (copy/paste into Python):
-//   PrintPythonArrayFloat("a", sig_out, NO_SYMBOLS * 2);
+  //PrintPythonArrayFloat("sig_out", sig_out, NO_SYMBOLS * 2);
+  for(int i = 0; i < NO_SYMBOLS * 2; i++){
+    printf("    %d: %.9g\n", i, (double)sig_out[i]);
+  }
 
-//   return 0;
-// }
+
+  return 0;
+}
