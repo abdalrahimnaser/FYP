@@ -6,7 +6,7 @@ void fir_non_causal(const float input[], const float taps[], float output[]){
 	float shift_reg[NO_TAPS]={0};
     float tmp;
 	#pragma HLS ARRAY_PARTITION variable=shift_reg complete dim=0 // allow parallel access to shift_reg (synthesie into registers not BRAM) - needed when combined with UNROLL
-
+	// add another one for taps 
     for(int i=HALF_TAPS; i<NO_TAPS; i++){
         #pragma HLS pipeline II=1 // OR UNROLL
         shift_reg[i] = input[i-HALF_TAPS];
@@ -31,11 +31,12 @@ void fir_non_causal(const float input[], const float taps[], float output[]){
 	}
 }
 
-void fir_non_causal_cmplx(const float input_I[], const float input_Q[], const float taps_I[], const float taps_Q[], float output[]){
+void fir_non_causal_cmplx(const float input_I[], const float input_Q[], const float taps_I[], const float taps_Q[], const float bias, float output[]){
 
 	float shift_reg_I[NO_TAPS]={0};
 	float shift_reg_Q[NO_TAPS]={0};
     float tmp_I, tmp_Q;
+	// add the below pragma for both shift_reg_I, shift_reg_Q , taps_I , taps_Q IN ADDITION TO UNROLL below 
 	#pragma HLS ARRAY_PARTITION variable=shift_reg complete dim=0 // allow parallel access to shift_reg (synthesie into registers not BRAM) - needed when combined with UNROLL
 
     for(int i=HALF_TAPS; i<NO_TAPS; i++){
@@ -62,13 +63,13 @@ void fir_non_causal_cmplx(const float input_I[], const float input_Q[], const fl
 		tmp_Q = (j<(NO_SYMBOLS-HALF_TAPS-1)) ? input_Q[j+1+HALF_TAPS] : 0;
 		shift_reg_I[NO_TAPS-1] = tmp_I;
 		shift_reg_Q[NO_TAPS-1] = tmp_Q;
-		output[j] = acc;
+		output[j] = acc + bias;
 	}
 }
 
 
 
-void non_causal_fir_top(const float sig_in[], const float taps_I[], const float taps_Q[], float sig_out[]) {
+void non_causal_fir_top(const float sig_in[], const float taps_I[], const float taps_Q[], const float bias, float sig_out[]) {
     #pragma HLS INTERFACE m_axi port=sig_in bundle=gmem0 offset=slave depth=NO_SYMBOLS*2
     #pragma HLS INTERFACE m_axi port=sig_out bundle=gmem1 offset=slave depth=NO_SYMBOLS
     #pragma HLS INTERFACE s_axilite port=sig_in bundle=control // sig?
@@ -76,5 +77,6 @@ void non_causal_fir_top(const float sig_in[], const float taps_I[], const float 
     #pragma HLS INTERFACE s_axilite port=return bundle=control
 
 
-	fir_non_causal_cmplx(sig_in, sig_in+NO_SYMBOLS, taps_I, taps_Q, sig_out);
+	fir_non_causal_cmplx(sig_in, sig_in+NO_SYMBOLS, taps_I, taps_Q, bias, sig_out);
+
 }
