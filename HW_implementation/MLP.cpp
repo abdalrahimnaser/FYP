@@ -123,9 +123,9 @@ void MultilayerPerceptron(const data_t sigI_in[], const data_t sigQ_in[], data_t
     data_t fir2_out[NO_SYMBOLS];
     //data_t output[NO_SYMBOLS*2];
 
-	#pragma HLS BIND_STORAGE variable=inI type=RAM_T2P // ram_s2p means two reads on one port, and two writes on the other port ... i only need two reads on one and one write on other
-    #pragma HLS BIND_STORAGE variable=inQ type=RAM_T2P
-	#pragma HLS DATAFLOW
+	#pragma HLS BIND_STORAGE variable=inI type=RAM_S2P // ram_s2p means two reads on one port, and two writes on the other port ... i only need two reads on one and one write on other
+    #pragma HLS BIND_STORAGE variable=inQ type=RAM_S2P
+	//#pragma HLS DATAFLOW
 
     for (int i=0; i<NO_SYMBOLS; i++) {
     #pragma HLS PIPELINE II=1
