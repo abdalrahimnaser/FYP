@@ -3,6 +3,9 @@
 #include "MLP_tb.h"
 #include "MLP.h"
 
+// Q(6.26): same scale as Python export (2**26)
+static constexpr double Q626_SCALE = 67108864.0;
+
 static void PrintPythonArrayFloat(const char *name, const float *arr, int n) {
   printf("%s = [", name);
   for (int i = 0; i < n; ++i) {
@@ -14,17 +17,21 @@ static void PrintPythonArrayFloat(const char *name, const float *arr, int n) {
 
 int main() {
 
-  static float sig_out[NO_SYMBOLS * 2];
+  static data_t sigI_out[NO_SYMBOLS];
+  static data_t sigQ_out[NO_SYMBOLS];
 
+  printf("%f ",  static_cast<float>(x[0]));
 
-
-  MultilayerPerceptron(x, sig_out);
+  MultilayerPerceptron(x, x+NO_SYMBOLS, sigI_out, sigQ_out);
 
   //PrintPythonArrayFloat("sig_out", sig_out, NO_SYMBOLS * 2);
-  for(int i = 0; i < NO_SYMBOLS * 2; i++){
-    printf("    %d: %.9g\n", i, (double)sig_out[i]);
+  for(int i = 0; i < NO_SYMBOLS; i++){
+    printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
   }
 
+  for(int i = 0; i < NO_SYMBOLS; i++){
+    printf("    %d: %f\n", i, static_cast<float>(sigQ_out[i]));
+  }
 
   return 0;
 }
