@@ -56,11 +56,10 @@ void fir_cmplx(const data_t input_I[], const data_t input_Q[], const data_t taps
     data_t shift_reg_I[no_taps]={0};
     data_t shift_reg_Q[no_taps]={0};
     data_t tmp_I, tmp_Q;
-    // add the below pragma for both shift_reg_I, shift_reg_Q , taps_I , taps_Q IN ADDITION TO UNROLL below 
     #pragma HLS ARRAY_PARTITION variable=shift_reg_I complete dim=0 // allow parallel access to shift_reg (synthesie into registers not BRAM) - needed when combined with UNROLL
-    #pragma HLS ARRAY_PARTITION variable=shift_reg_Q complete dim=0 // allow parallel access to shift_reg (synthesie into registers not BRAM) - needed when combined with UNROLL
-    #pragma HLS ARRAY_PARTITION variable=taps_I complete dim=0 // allow parallel access to shift_reg (synthesie into registers not BRAM) - needed when combined with UNROLL
-    #pragma HLS ARRAY_PARTITION variable=taps_Q complete dim=0 // allow parallel access to shift_reg (synthesie into registers not BRAM) - needed when combined with UNROLL
+    #pragma HLS ARRAY_PARTITION variable=shift_reg_Q complete dim=0 
+    #pragma HLS ARRAY_PARTITION variable=taps_I complete dim=0 
+    #pragma HLS ARRAY_PARTITION variable=taps_Q complete dim=0 
 
 
     for(int i=half_taps; i<no_taps; i++){
@@ -77,9 +76,7 @@ void fir_cmplx(const data_t input_I[], const data_t input_Q[], const data_t taps
         data_t acc = 0;
         for (int i = 0; i < no_taps-1; i++) {
             #pragma HLS UNROLL
-            // TODO: implement UNROLL logic here, just add the relevant pragma
-            // refer to [https://github.com/Xilinx/xup_high_level_synthesis_design_flow/blob/main/source/fir/notebook/fir_part2.ipynb](https://github.com/Xilinx/xup_high_level_synthesis_design_flow/blob/main/source/fir/notebook/fir_part2.ipynb)
-            // though that needs to be applied to both shift reg and taps. as taps needs to be accessed in parallel as well
+            // refer to [https://github.com/Xilinx/xup_high_level_synthesis_design_flow/blob/main/source/fir/notebook/fir_part2.ipynb]
             acc += static_cast<data_t>(shift_reg_I[i]) * static_cast<data_t>(taps_I[i]) +
                    static_cast<data_t>(shift_reg_Q[i]) * static_cast<data_t>(taps_Q[i]);
             shift_reg_I[i] = shift_reg_I[i + 1];
