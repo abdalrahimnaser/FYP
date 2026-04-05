@@ -1,4 +1,4 @@
-#include "MLP.h"
+#include "NNDPD_hls.h"
 const data_t x[10000] = {
     0.31622776601683794,
     0.31622776601683794,

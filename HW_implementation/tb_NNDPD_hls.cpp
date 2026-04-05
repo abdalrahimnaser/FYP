@@ -1,7 +1,7 @@
 #include <math.h>
 #include <stdio.h>
-#include "MLP_tb.h"
-#include "MLP.h"
+#include "tb_NNDPD_hls.h"
+#include "NNDPD_hls.h"
 
 // Q(6.26): same scale as Python export (2**26)
 static constexpr double Q626_SCALE = 67108864.0;

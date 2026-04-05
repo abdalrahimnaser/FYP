@@ -1,4 +1,4 @@
-#include "MLP.h"
+#include "NNDPD_hls.h"
 #include <hls_math.h>
 
 
