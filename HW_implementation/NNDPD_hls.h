@@ -1,6 +1,6 @@
 #pragma once
 #include <ap_fixed.h>
-typedef ap_fixed<24,4> data_t;
+typedef ap_fixed<16,3> data_t;
 // typedef ap_fixed<32,6,AP_RND_CONV,AP_SAT> acc_t;
 // typedef ap_fixed<24,3,AP_RND_CONV,AP_SAT> trig_t;
 
