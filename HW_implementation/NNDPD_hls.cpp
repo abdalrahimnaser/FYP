@@ -2,12 +2,23 @@
 #include <hls_math.h>
 
 
+inline data_t lut_sin(data_t x) {
+  #pragma HLS INLINE
+  // Wrap x to [0, 2pi] and quantise
+  ap_uint<9> idx = static_cast<ap_uint<9>>(
+      ((x + data_t(3.14159)) * data_t(512.0 / 6.28318)) 
+  );
+  return SIN_LUT[idx];
+}
+
+
 template<int K, int N, int M, int D, bool activation_en>
 void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[], data_t C[]){
       for (int n = 0; n < N / D; ++n) {
 
-
+      
        data_t acc[D][M];
+       data_t tmp;
        #pragma HLS ARRAY_PARTITION variable=acc dim=1 complete
 
 
@@ -35,13 +46,10 @@ void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[]
 
         for (int nd = 0; nd < D; ++nd) {
           for (int m = 0; m < M; ++m) {
-            #pragma HLS LOOP_FLATTEN
+            #pragma HLS LOOP_FLATTEN // should i remove this? what happens to lut cnt and latency.
             #pragma HLS PIPELINE II=1
-            C[n * D * M + nd * M + m] =
-                (activation_en==true)
-                ? static_cast<data_t>(hls::sin(static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]))))
-                : static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]));
-			//C[n * D * M + nd * M + m] = static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]));
+            tmp = static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]));
+            C[n * D * M + nd * M + m] =(activation_en==true)? static_cast<data_t>(lut_sin(tmp)) : tmp;
           }
         }
       }
