@@ -39,7 +39,7 @@ void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[]
             #pragma HLS PIPELINE II=1
             C[n * D * M + nd * M + m] =
                 (activation_en==true)
-                ? static_cast<data_t>(hls::sinf(static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]))))
+                ? static_cast<data_t>(hls::sin(static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]))))
                 : static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]));
 			//C[n * D * M + nd * M + m] = static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]));
           }
