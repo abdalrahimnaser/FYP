@@ -20,17 +20,16 @@ int main() {
   static data_t sigI_out[NO_SYMBOLS];
   static data_t sigQ_out[NO_SYMBOLS];
 
-  printf("%f ",  static_cast<float>(x[0]));
 
   MultilayerPerceptron(x, x+NO_SYMBOLS, sigI_out, sigQ_out);
 
   //PrintPythonArrayFloat("sig_out", sig_out, NO_SYMBOLS * 2);
   for(int i = 0; i < NO_SYMBOLS; i++){
-    printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
+    //printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
   }
 
   for(int i = 0; i < NO_SYMBOLS; i++){
-    printf("    %d: %f\n", i, static_cast<float>(sigQ_out[i]));
+    //printf("    %d: %f\n", i, static_cast<float>(sigQ_out[i]));
   }
 
   return 0;
