@@ -103,7 +103,7 @@ void fir_cmplx(const data_t input_I[], const data_t input_Q[], const data_t taps
 
 
 
-void MultilayerPerceptron(const data_t sigI_in[], const data_t sigQ_in[], data_t sigI_out[], data_t sigQ_out[]) {
+void NNDPD(const data_t sigI_in[], const data_t sigQ_in[], data_t sigI_out[], data_t sigQ_out[]) {
 #pragma HLS INTERFACE m_axi port=sigI_in bundle=gmem0 offset=slave depth=NO_SYMBOLS
 #pragma HLS INTERFACE m_axi port=sigQ_in bundle=gmem1 offset=slave depth=NO_SYMBOLS
 #pragma HLS INTERFACE m_axi port=sigI_out bundle=gmem0 offset=slave depth=NO_SYMBOLS

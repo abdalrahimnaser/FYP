@@ -22,7 +22,7 @@ int main() {
   float mse = 0;
   float val = 0;
 
-  MultilayerPerceptron(x, x+NO_SYMBOLS, sigI_out, sigQ_out);
+  NNDPD(x, x+NO_SYMBOLS, sigI_out, sigQ_out);
    //PrintPythonArrayFloat("sig_out", sig_out, NO_SYMBOLS * 2);
    for(int i = 0; i < NO_SYMBOLS; i++){
     val = (static_cast<float>(x[i]) - static_cast<float>(sigI_out[i]));
