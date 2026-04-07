@@ -1,6 +1,7 @@
 #pragma once
 #include <ap_fixed.h>
 typedef ap_fixed<24,4> data_t;
+typedef ap_fixed<24,12> lut_dt;
 
 #define NO_SYMBOLS 5000
 #define NO_TAPS 101
@@ -101,15 +102,21 @@ static const data_t SIN_LUT[512] = {
     data_t(0.098017140330), data_t(0.085797312344), data_t(0.073564563600), data_t(0.061320736302), data_t(0.049067674327), data_t(0.036807222941), data_t(0.024541228523), data_t(0.012271538286)
 };
 
+
 inline data_t lut_sin(data_t x) {
     #pragma HLS INLINE
-    float xf = (float)x;
-    float shifted = xf + 3.14159265f;
-    if (shifted < 0.0f)      shifted = 0.0f;
-    if (shifted > 6.28318f)  shifted = 6.28318f;
-    ap_uint<9> idx = (ap_uint<9>)(shifted * (81.48733086305042f));
+    lut_dt xf = static_cast<lut_dt>(x);
+    lut_dt shifted = xf + static_cast<lut_dt>(3.14159265);
+    lut_dt scale = static_cast<lut_dt>(81.48733086305042); // 512/2*PI
+
+    if (shifted < static_cast<lut_dt>(0))      shifted = static_cast<lut_dt>(0);
+    if (shifted > static_cast<lut_dt>(6.28318))  shifted = static_cast<lut_dt>(6.28318);
+
+    ap_uint<9> idx = static_cast<ap_uint<9>>(shifted * scale); 
+
     return SIN_LUT[idx];
 }
+
 
 const data_t taps1_I[NO_TAPS] = {
     -0.0007207565358839929,
