@@ -1,31 +1,6 @@
 #include "NNDPD_hls.h"
 #include <hls_math.h>
 
-// inline data_t lut_sin(data_t x) {
-//   #pragma HLS INLINE
-//   // Wrap x to [0, 2pi] and quantise
-//   ap_uint<9> idx = static_cast<ap_uint<9>>(
-//       ((x + data_t(3.14159)) * data_t(512.0 / 6.28318)) 
-//   );
-//   return SIN_LUT[idx];
-// }
-
-
-inline data_t lut_sin(data_t x) {
-  #pragma HLS INLINE
-
-  float xf = (float)x;
-  float shifted = xf + 3.14159265f;
-
-  // clamp
-  if (shifted < 0.0f)      shifted = 0.0f;
-  if (shifted > 6.28318f)  shifted = 6.28318f;
-
-  ap_uint<9> idx = (ap_uint<9>)(shifted * (512.0f / 6.28318f));
-
-  return SIN_LUT[idx];
-}
-
 template<int K, int N, int M, int D, bool activation_en>
 void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[], data_t C[]){
       for (int n = 0; n < N / D; ++n) {
@@ -60,13 +35,9 @@ void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[]
 
         for (int nd = 0; nd < D; ++nd) {
           for (int m = 0; m < M; ++m) {
-            #pragma HLS LOOP_FLATTEN // should i remove this? what happens to lut cnt and latency.
+            #pragma HLS LOOP_FLATTEN
             #pragma HLS PIPELINE II=1
             tmp = static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]));
-
-            //printf("tmp: %f, lut_sin: %f, hls::sin: %f\n", static_cast<float>(tmp), static_cast<float>(lut_sin(tmp)), static_cast<float>(hls::sin(tmp)));
-
-
             C[n * D * M + nd * M + m] =(activation_en==true)? static_cast<data_t>(lut_sin(tmp)) : tmp;
           }
         }
@@ -131,9 +102,6 @@ void MultilayerPerceptron(const data_t sigI_in[], const data_t sigQ_in[], data_t
 #pragma HLS INTERFACE s_axilite port=sigQ_out bundle=control // sig?
 #pragma HLS INTERFACE s_axilite port=return bundle=control
 
-  // printf("lut_sine of pi, pi/2, pi/4: %f, %f, %f\n",  static_cast<float>(lut_sin(3.14159)), static_cast<float>(lut_sin(3.14159/2)), static_cast<float>(lut_sin(3.14159/4)));
-  // printf("hls_sine of pi, pi/2, pi/4: %f, %f, %f\n",  static_cast<float>(hls::sin(3.14159)), static_cast<float>(hls::sin(3.14159/2)), static_cast<float>(hls::sin(3.14159/4)));
-
     data_t input_1[2];
     data_t input_2[NEURONS_1];
     data_t input_3[NEURONS_2];
@@ -144,10 +112,9 @@ void MultilayerPerceptron(const data_t sigI_in[], const data_t sigQ_in[], data_t
     data_t inQ[NO_SYMBOLS];
     data_t fir1_out[NO_SYMBOLS];
     data_t fir2_out[NO_SYMBOLS];
-    //data_t output[NO_SYMBOLS*2];
 
 	#pragma HLS BIND_STORAGE variable=inI type=RAM_S2P // ram_s2p means two reads on one port, and two writes on the other port ... i only need two reads on one and one write on other
-    #pragma HLS BIND_STORAGE variable=inQ type=RAM_S2P
+  #pragma HLS BIND_STORAGE variable=inQ type=RAM_S2P
 	//#pragma HLS DATAFLOW
 
     for (int i=0; i<NO_SYMBOLS; i++) {
@@ -185,9 +152,4 @@ void MultilayerPerceptron(const data_t sigI_in[], const data_t sigQ_in[], data_t
 
     }
 
-
-    // for (int i=0; i<NO_SYMBOLS*2; i++) {
-    //  #pragma HLS PIPELINE II=1
-    //  sig_out[i] = output[i];
-    // }
 }
