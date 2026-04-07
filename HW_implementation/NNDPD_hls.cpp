@@ -14,18 +14,17 @@
 inline data_t lut_sin(data_t x) {
   #pragma HLS INLINE
 
-  typedef ap_fixed<32, 10> wide_t;  // 10 integer bits handles up to 512
+  float xf = (float)x;
+  float shifted = xf + 3.14159265f;
 
-  wide_t shifted = wide_t(x) + wide_t(3.14159265f);
+  // clamp
+  if (shifted < 0.0f)      shifted = 0.0f;
+  if (shifted > 6.28318f)  shifted = 6.28318f;
 
-  if (shifted < wide_t(0))       shifted = wide_t(0);
-  if (shifted > wide_t(6.2831f)) shifted = wide_t(6.2831f);
-
-  ap_uint<9> idx = (ap_uint<9>)((ap_ufixed<16, 10>)(shifted * wide_t(81.4873f)));
+  ap_uint<9> idx = (ap_uint<9>)(shifted * (512.0f / 6.28318f));
 
   return SIN_LUT[idx];
 }
-
 
 template<int K, int N, int M, int D, bool activation_en>
 void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[], data_t C[]){
@@ -65,7 +64,7 @@ void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[]
             #pragma HLS PIPELINE II=1
             tmp = static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]));
 
-            printf("tmp: %f, lut_sin: %f, hls::sin: %f\n", static_cast<float>(tmp), static_cast<float>(lut_sin(tmp)), static_cast<float>(hls::sin(tmp)));
+            //printf("tmp: %f, lut_sin: %f, hls::sin: %f\n", static_cast<float>(tmp), static_cast<float>(lut_sin(tmp)), static_cast<float>(hls::sin(tmp)));
 
 
             C[n * D * M + nd * M + m] =(activation_en==true)? static_cast<data_t>(lut_sin(tmp)) : tmp;
@@ -78,10 +77,6 @@ void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[]
 
 template<int no_taps, int no_symbols, int half_taps>
 void fir_cmplx(const data_t input_I[], const data_t input_Q[], const data_t taps_I[], const data_t taps_Q[], const data_t bias, data_t output[]){
-  printf("lut_sine of pi, pi/2, pi/4: %f, %f, %f\n",  static_cast<float>(lut_sin(3.14159)), static_cast<float>(lut_sin(3.14159/2)), static_cast<float>(lut_sin(3.14159/4)));
-  printf("hls_sine of pi, pi/2, pi/4: %f, %f, %f\n",  static_cast<float>(hls::sin(3.14159)), static_cast<float>(hls::sin(3.14159/2)), static_cast<float>(hls::sin(3.14159/4)));
-
-
     data_t shift_reg_I[no_taps]={0};
     data_t shift_reg_Q[no_taps]={0};
     data_t tmp_I, tmp_Q;
@@ -136,6 +131,8 @@ void MultilayerPerceptron(const data_t sigI_in[], const data_t sigQ_in[], data_t
 #pragma HLS INTERFACE s_axilite port=sigQ_out bundle=control // sig?
 #pragma HLS INTERFACE s_axilite port=return bundle=control
 
+  // printf("lut_sine of pi, pi/2, pi/4: %f, %f, %f\n",  static_cast<float>(lut_sin(3.14159)), static_cast<float>(lut_sin(3.14159/2)), static_cast<float>(lut_sin(3.14159/4)));
+  // printf("hls_sine of pi, pi/2, pi/4: %f, %f, %f\n",  static_cast<float>(hls::sin(3.14159)), static_cast<float>(hls::sin(3.14159/2)), static_cast<float>(hls::sin(3.14159/4)));
 
     data_t input_1[2];
     data_t input_2[NEURONS_1];

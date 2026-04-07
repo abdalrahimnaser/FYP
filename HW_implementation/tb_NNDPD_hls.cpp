@@ -23,14 +23,14 @@ int main() {
 
   MultilayerPerceptron(x, x+NO_SYMBOLS, sigI_out, sigQ_out);
 
-  //PrintPythonArrayFloat("sig_out", sig_out, NO_SYMBOLS * 2);
-  for(int i = 0; i < NO_SYMBOLS; i++){
-    //printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
-  }
+   //PrintPythonArrayFloat("sig_out", sig_out, NO_SYMBOLS * 2);
+   for(int i = 0; i < NO_SYMBOLS; i++){
+     printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
+   }
 
-  for(int i = 0; i < NO_SYMBOLS; i++){
-    //printf("    %d: %f\n", i, static_cast<float>(sigQ_out[i]));
-  }
+//   for(int i = 0; i < NO_SYMBOLS; i++){
+//     //printf("    %d: %f\n", i, static_cast<float>(sigQ_out[i]));
+//   }
 
   return 0;
 }
