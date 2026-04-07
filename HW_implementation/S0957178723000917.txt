@@ -1,0 +1,11 @@
+Balakumar Palaniyappan, Vinopraba T, Geetha Chandrasekaran,
+Solving electric power distribution uncertainty using deep learning and incentive-based demand response,
+Utilities Policy,
+Volume 82,
+2023,
+101579,
+ISSN 0957-1787,
+https://doi.org/10.1016/j.jup.2023.101579.
+(https://www.sciencedirect.com/science/article/pii/S0957178723000917)
+Abstract: Recent Demand Response (DR) struggles with the end user's uncertainty in Electric Power Consumption (EPC), which affects the system's generation costs and stability. Incentive-based DR has offered to be an effective technique for mitigating supply and demand imbalances. However, it presents complex issues, such as electricity consumption uncertainty. This article proposes an incentive-based integrated DR model for Demand Side Management (DSM) program to handle the EPC uncertainty. In addition, the applicability of DR has been enhanced by the deep learning-based Bi-directional Long Short Term Memory (B-LSTM) model to forecast and curtail the load of the participated end users in the DSM program. Finally, results indicate that the proposed DSM program can achieve a win-win situation in reducing end-user uncertainty, lowering costs, and enhancing system stability.
+Keywords: Deep learning; Demand response program; Uncertainty analysis; Short term forecasting; Smart grid; Internet of things

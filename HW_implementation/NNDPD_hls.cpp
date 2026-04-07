@@ -1,16 +1,74 @@
 #include "NNDPD_hls.h"
 #include <hls_math.h>
 
+typedef ap_fixed<32,12> cordic_angle_t;
+typedef ap_fixed<32,12> cordic_val_t;
 
-inline data_t lut_sin(data_t x) {
-  #pragma HLS INLINE
-  // Wrap x to [0, 2pi] and quantise
-  ap_uint<9> idx = static_cast<ap_uint<9>>(
-      ((x + data_t(3.14159)) * data_t(512.0 / 6.28318)) 
-  );
-  return SIN_LUT[idx];
+static data_t cordic_sin(data_t theta_rad)
+{
+#pragma HLS INLINE
+
+    // Precomputed arctan(2^-i) table — 16 iterations (from PDF)
+    static const cordic_angle_t cordic_phase[16] = {
+        (cordic_angle_t)0.7853981634,  // arctan(2^0)  = 45.000°
+        (cordic_angle_t)0.4636476090,  // arctan(2^-1) = 26.565°
+        (cordic_angle_t)0.2449786631,  // arctan(2^-2) = 13.928°
+        (cordic_angle_t)0.1243549945,  // arctan(2^-3) =  7.125°
+        (cordic_angle_t)0.0624188100,  // arctan(2^-4) =  3.576°
+        (cordic_angle_t)0.0312398334,  // arctan(2^-5) =  1.790°
+        (cordic_angle_t)0.0156237286,  // arctan(2^-6) =  0.895°
+        (cordic_angle_t)0.0078123411,  // arctan(2^-7) =  0.448°
+        (cordic_angle_t)0.0039062301,  // arctan(2^-8)
+        (cordic_angle_t)0.0019531225,  // arctan(2^-9)
+        (cordic_angle_t)0.0009765622,  // arctan(2^-10)
+        (cordic_angle_t)0.0004882812,  // arctan(2^-11)
+        (cordic_angle_t)0.0002441406,  // arctan(2^-12)
+        (cordic_angle_t)0.0001220703,  // arctan(2^-13)
+        (cordic_angle_t)0.0000610352,  // arctan(2^-14)
+        (cordic_angle_t)0.0000305176   // arctan(2^-15)
+    };
+    #pragma HLS ARRAY_PARTITION variable=cordic_phase complete dim=1
+
+    // CORDIC gain compensation factor K = prod(cos(arctan(2^-i)))
+    static const cordic_val_t CORDIC_SCALE = (cordic_val_t)0.6072529350;
+    static const cordic_angle_t PI         = (cordic_angle_t)3.14159265;
+    static const cordic_angle_t PI_HALF    = (cordic_angle_t)1.57079633;
+
+    // Cast input to internal CORDIC type
+    cordic_angle_t theta = (cordic_angle_t)theta_rad;
+
+    // Normalize to [-pi/2, pi/2] for CORDIC convergence (from PDF)
+    bool negate_result = false;
+    if (theta > PI_HALF) {
+        theta = PI - theta;
+        negate_result = true;
+    } else if (theta < -PI_HALF) {
+        theta = -PI - theta;
+        negate_result = true;
+    }
+
+    // CORDIC initialisation
+    cordic_val_t   current_cos   = CORDIC_SCALE;
+    cordic_val_t   current_sin   = (cordic_val_t)0;
+    cordic_angle_t current_theta = (cordic_angle_t)0;
+
+    // Iterative micro-rotations (pipelined, II=1 — matches PDF)
+    CORDIC_LOOP: for (int j = 0; j < 16; j++) {
+    #pragma HLS PIPELINE II=1
+    //#pragma HLS UNROLL factor=2          // optional: trades LUTs for latency
+        int direction = (theta > current_theta) ? 1 : -1;
+        cordic_val_t   cos_temp = current_cos;
+        cordic_val_t   sin_temp = current_sin;
+        current_cos   = cos_temp - (cordic_val_t)(direction * (sin_temp >> j));
+        current_sin   = sin_temp + (cordic_val_t)(direction * (cos_temp >> j));
+        current_theta = current_theta + (cordic_angle_t)(direction * cordic_phase[j]);
+    }
+
+    if (negate_result)
+        current_sin = -current_sin;
+
+    return static_cast<data_t>(current_sin);
 }
-
 
 template<int K, int N, int M, int D, bool activation_en>
 void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[], data_t C[]){
@@ -49,7 +107,7 @@ void FullyConnectedLayer(const data_t A[], const data_t B[], const data_t bias[]
             #pragma HLS LOOP_FLATTEN // should i remove this? what happens to lut cnt and latency.
             #pragma HLS PIPELINE II=1
             tmp = static_cast<data_t>(acc[nd][m] + static_cast<data_t>(bias[n * D * M + nd * M + m]));
-            C[n * D * M + nd * M + m] =(activation_en==true)? static_cast<data_t>(lut_sin(tmp)) : tmp;
+            C[n * D * M + nd * M + m] =(activation_en==true)? static_cast<data_t>(cordic_sin(tmp)) : tmp;
           }
         }
       }
