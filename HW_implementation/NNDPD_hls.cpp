@@ -1,3 +1,15 @@
+/*
+Author: Abed Naser
+Date: 2026-04-07
+This file implements a pipelined CNN-FCNN Digital Predistortion Accelerator in HLS for FPGA deployement.
+
+Latency is ~ 20,000 cycles for 5000 IQ symbols with only ~48K LUTs.
+Tested on Xilinx Ultrascale + MPSoC FPGA
+
+Includes lookup table-based sine activation, and complex non-causal FIR filtering.
+*/
+
+
 #include "NNDPD_hls.h"
 #include <hls_math.h>
 

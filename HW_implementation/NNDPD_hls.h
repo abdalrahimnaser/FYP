@@ -1,3 +1,10 @@
+/*
+Source file: NNDPD_hls.cpp
+Author: Abed Naser
+Date: 2026-04-07
+Pipeline CNN-FCNN Digital Predistortion Accelerator in HLS for FPGA deployement.
+*/
+
 #pragma once
 #include <ap_fixed.h>
 typedef ap_fixed<24,4> data_t;
