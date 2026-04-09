@@ -17,25 +17,25 @@ static void PrintPythonArrayFloat(const char *name, const float *arr, int n) {
 
 int main() {
 
-  static data_t sigI_out[NO_SYMBOLS];
-  static data_t sigQ_out[NO_SYMBOLS];
+  static float sigI_out[NO_SYMBOLS];
+  static float sigQ_out[NO_SYMBOLS];
   float mse = 0;
   float val = 0;
 
   NNDPD(x, x+NO_SYMBOLS, sigI_out, sigQ_out);
    //PrintPythonArrayFloat("sig_out", sig_out, NO_SYMBOLS * 2);
    for(int i = 0; i < NO_SYMBOLS; i++){
-    val = (static_cast<float>(x[i]) - static_cast<float>(sigI_out[i]));
+    val = ((x[i]) - (sigI_out[i]));
     mse+= val * val;
 
-    //printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
+    printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
    }
 
     for(int i = 0; i < NO_SYMBOLS; i++){
-     val = (static_cast<float>(x[i+NO_SYMBOLS]) - static_cast<float>(sigQ_out[i]));
+     val = ((x[i+NO_SYMBOLS]) - (sigQ_out[i]));
      mse+= val * val;
 
-     //printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
+     printf("    %d: %f\n", i, static_cast<float>(sigI_out[i]));
     }
   mse = mse / (NO_SYMBOLS*2); // should be close to the val in utils.ipynb, 0.9152914517872547-ish
   printf("mse: %f\n", mse);

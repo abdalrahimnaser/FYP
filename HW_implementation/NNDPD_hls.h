@@ -17,7 +17,7 @@ typedef ap_fixed<24,12> lut_dt;
 #define NEURONS_2 20
 #define NEURONS_3 2
 
-void NNDPD(const data_t sigI_in[], const data_t sigQ_in[], data_t sigI_out[], data_t sigQ_out[]);
+void NNDPD(const float sigI_in[], const float sigQ_in[], float sigI_out[], float sigQ_out[]);
 
 
 template<int K, int N, int M, int D>

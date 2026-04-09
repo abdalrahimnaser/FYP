@@ -103,7 +103,7 @@ void fir_cmplx(const data_t input_I[], const data_t input_Q[], const data_t taps
 
 
 
-void NNDPD(const data_t sigI_in[], const data_t sigQ_in[], data_t sigI_out[], data_t sigQ_out[]) {
+void NNDPD(const float sigI_in[], const float sigQ_in[], float sigI_out[], float sigQ_out[]) {
 #pragma HLS INTERFACE m_axi port=sigI_in bundle=gmem0 offset=slave depth=NO_SYMBOLS
 #pragma HLS INTERFACE m_axi port=sigQ_in bundle=gmem1 offset=slave depth=NO_SYMBOLS
 #pragma HLS INTERFACE m_axi port=sigI_out bundle=gmem0 offset=slave depth=NO_SYMBOLS
@@ -131,8 +131,8 @@ void NNDPD(const data_t sigI_in[], const data_t sigQ_in[], data_t sigI_out[], da
 
     for (int i=0; i<NO_SYMBOLS; i++) {
     #pragma HLS PIPELINE II=1
-        inI[i] = sigI_in[i];
-		inQ[i] = sigQ_in[i];
+        inI[i] = static_cast<data_t>(sigI_in[i]);
+		inQ[i] = static_cast<data_t>(sigQ_in[i]);
     }
 
 
@@ -158,8 +158,8 @@ void NNDPD(const data_t sigI_in[], const data_t sigQ_in[], data_t sigI_out[], da
         FullyConnectedLayer<NEURONS_2, 1, NEURONS_3, 1, false>(input_3, weights_3, biases_3, output_3);
 
 
-        sigI_out[i] = static_cast<data_t>(static_cast<data_t>(fir1_out[i]) + static_cast<data_t>(output_3[0]));
-        sigQ_out[i] = static_cast<data_t>(static_cast<data_t>(fir2_out[i]) + static_cast<data_t>(output_3[1]));
+        sigI_out[i] = static_cast<float>(static_cast<data_t>(fir1_out[i]) + static_cast<data_t>(output_3[0]));
+        sigQ_out[i] = static_cast<float>(static_cast<data_t>(fir2_out[i]) + static_cast<data_t>(output_3[1]));
 
 
     }
